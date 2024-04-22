@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/SignIn.css";
 
@@ -18,10 +18,10 @@ const SignIn: React.FC = () => {
       });
 
       if (response.ok) {
-        // Navigate to the Forecast page or any other page you want to redirect to upon successful sign-in
+        const data = await response.json();
+        localStorage.setItem("token", data.token); // Store token in localStorage
         navigate("/forecast");
       } else {
-        // Handle failed sign-in
         console.error("Sign-in failed");
       }
     } catch (error) {

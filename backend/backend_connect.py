@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import pandas as pd
 import numpy as np
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.preprocessing import MinMaxScaler
 from keras.layers import LSTM, Dense
@@ -11,11 +11,14 @@ from keras.models import Sequential
 import yfinance as yf
 import os
 from dotenv import load_dotenv
+import jwt
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.debug = False
 CORS(app)
 db = SQLAlchemy(app)
 
@@ -64,12 +67,16 @@ def signin():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
+    utc_now = datetime.now(timezone.utc)
+    utc_expiration = utc_now + timedelta(hours=1)
 
     # Query the database for the user
     user = User.query.filter_by(user_name=username).first()
 
     if user and user.user_pass == password:
-        return jsonify(message="Signin successful"), 200
+        # Generate a token
+        token = jwt.encode({'user_id': user.user_id, 'exp':utc_expiration}, app.config['SECRET_KEY'])
+        return jsonify(token=token), 200
     else:
         return jsonify(message="Invalid username or password"), 401
     
@@ -115,12 +122,6 @@ def forecast():
     start_date = data.get('startDate')
     forecasted_value = perform_forecast(ticker, start_date)
     return jsonify(forecastValue=float(forecasted_value)), 200
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-if __name__ == '__main__':
-    app.run(debug=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
