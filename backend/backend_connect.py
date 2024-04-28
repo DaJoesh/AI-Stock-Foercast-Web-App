@@ -73,12 +73,16 @@ def signin():
     # Query the database for the user
     user = User.query.filter_by(user_name=username).first()
 
-    if user and user.user_pass == password:
-        # Generate a token
-        token = jwt.encode({'user_id': user.user_id, 'exp':utc_expiration}, app.config['SECRET_KEY'])
-        return jsonify(token=token), 200
+    if user:
+        # Check if password matches
+        if user.user_pass == password:
+            # Generate a token
+            token = jwt.encode({'user_id': user.user_id, 'exp': utc_expiration}, app.config['SECRET_KEY'])
+            return jsonify(token=token), 200
+        else:
+            return jsonify(message="Invalid password"), 401
     else:
-        return jsonify(message="Invalid username or password"), 401
+        return jsonify(message="User not found"), 401
     
 # function to perform stock forecast
 def perform_forecast(ticker, start_date):

@@ -6,6 +6,7 @@ const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSignIn = async () => {
     try {
@@ -22,7 +23,8 @@ const SignIn: React.FC = () => {
         localStorage.setItem("token", data.token); // Store token in localStorage
         navigate("/forecast");
       } else {
-        console.error("Sign-in failed");
+        const data = await response.json();
+        setErrorMessage(data.message); // Set error message received from backend
       }
     } catch (error) {
       console.error("Error occurred:", error);
@@ -32,6 +34,8 @@ const SignIn: React.FC = () => {
   return (
     <div className="signin-container">
       <h1>Sign in</h1>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}{" "}
+      {/* Display error message if present */}
       <form>
         <div className="mb-3">
           <label htmlFor="username" className="form-label">
