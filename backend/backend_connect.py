@@ -24,7 +24,7 @@ db = SQLAlchemy(app)
 
 # Define database models
 class User(db.Model):
-    user_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_name = db.Column(db.String(50), unique=True, nullable=False)
     user_pass = db.Column(db.String(50), nullable=False)
 
