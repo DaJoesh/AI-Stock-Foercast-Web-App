@@ -10,7 +10,7 @@ const SignIn: React.FC = () => {
 
   const handleSignIn = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/signin", {
+      const response = await fetch("http://54.151.57.130:5000/api/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
